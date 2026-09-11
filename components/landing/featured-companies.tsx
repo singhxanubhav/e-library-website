@@ -6,7 +6,6 @@ import { Clock, ArrowRight, Sparkles, Building2 } from "lucide-react";
 import { Card, CardContent, CardFooter, CardHeader } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { SEEDED_COMPANIES } from "@/lib/mock-data";
 import { getInitials } from "@/lib/utils";
 
 const FLAG_MAP: Record<string, string> = {
@@ -16,8 +15,71 @@ const FLAG_MAP: Record<string, string> = {
   Global: "🌐",
 };
 
+const FEATURED_COMPANIES = [
+  {
+    name: "Sarvam AI",
+    slug: "sarvam-ai",
+    hqCountry: "India",
+    foundingYear: 2023,
+    fundingStage: "Series A ($41M)",
+    valueProposition:
+      "Foundational AI models and generative voice stacks purpose-built for India's 22 official languages and diverse socioeconomic contexts.",
+    readingTimeMin: 7,
+    tags: {
+      industry: ["Enterprise SaaS"],
+      technique: ["generative AI"],
+      business_model: ["usage-based"],
+    },
+  },
+  {
+    name: "Krutrim",
+    slug: "krutrim",
+    hqCountry: "India",
+    foundingYear: 2023,
+    fundingStage: "Series A ($50M)",
+    valueProposition:
+      "India's first AI unicorn building full-stack sovereign AI: foundation models, vernacular cloud infrastructure, and silicon chips.",
+    readingTimeMin: 6,
+    tags: {
+      industry: ["Enterprise SaaS"],
+      technique: ["NLP"],
+      business_model: ["API-based"],
+    },
+  },
+  {
+    name: "Cursor",
+    slug: "cursor",
+    hqCountry: "US",
+    foundingYear: 2023,
+    fundingStage: "Series A ($60M)",
+    valueProposition:
+      "AI-first code editor with deep repository understanding, speculative editing, and multi-file agentic code generation.",
+    readingTimeMin: 8,
+    tags: {
+      industry: ["Developer Tools"],
+      technique: ["generative AI"],
+      business_model: ["SaaS"],
+    },
+  },
+  {
+    name: "Harvey AI",
+    slug: "harvey-ai",
+    hqCountry: "US",
+    foundingYear: 2022,
+    fundingStage: "Series B ($100M+)",
+    valueProposition:
+      "Domain-adapted legal AI platform automating contract due diligence, litigation research, and compliance analysis.",
+    readingTimeMin: 7,
+    tags: {
+      industry: ["LegalTech"],
+      technique: ["NLP"],
+      business_model: ["enterprise licensing"],
+    },
+  },
+];
+
 export function FeaturedCompanies() {
-  const featured = SEEDED_COMPANIES.filter((c) => c.isFeatured).slice(0, 4);
+  const featured = FEATURED_COMPANIES;
 
   return (
     <section className="py-16 md:py-24">
