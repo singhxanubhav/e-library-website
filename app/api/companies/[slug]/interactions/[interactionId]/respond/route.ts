@@ -2,7 +2,6 @@ import { NextRequest, NextResponse } from "next/server";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
 import { prisma } from "@/lib/db";
-import { recordUserActivity, checkAndAwardBadges } from "@/lib/progress";
 
 export async function POST(
   request: NextRequest,
@@ -42,9 +41,6 @@ export async function POST(
             textResponse,
           },
         });
-
-        await recordUserActivity(userId);
-        await checkAndAwardBadges(userId);
       }
     } catch (dbError) {
       console.warn("DB interaction upsert failed, continuing gracefully:", dbError);
