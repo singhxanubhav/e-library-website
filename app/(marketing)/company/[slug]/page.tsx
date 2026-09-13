@@ -8,7 +8,7 @@ import { TractionMetricsSection } from "@/components/company-module/traction-met
 import { InsightsSection } from "@/components/company-module/insights-section";
 import { DidYouKnowCard } from "@/components/company-module/did-you-know-card";
 import { InteractionSection } from "@/components/company-module/interaction-section";
-import { QuizPlaceholderCard } from "@/components/company-module/quiz-placeholder-card";
+import { QuizPlayer } from "@/components/quiz/quiz-player";
 import { ModuleNav } from "@/components/company-module/module-nav";
 
 interface CompanyPageProps {
@@ -67,7 +67,12 @@ export default async function CompanyPage({ params }: CompanyPageProps) {
       />
 
       {/* 9. Module Quiz Section */}
-      <QuizPlaceholderCard companyName={company.name} />
+      <section className="space-y-4">
+        <div className="flex items-center space-x-2 text-xs font-bold uppercase tracking-wider text-amberHighlight-500">
+          <span>Section 9 • Module Mastery Quiz</span>
+        </div>
+        <QuizPlayer quizId={`quiz-${company.slug}`} companySlug={company.slug} />
+      </section>
 
       {/* Bottom Navigation */}
       <ModuleNav prevCompany={prevCompany} nextCompany={nextCompany} />
