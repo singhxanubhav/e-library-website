@@ -1,0 +1,811 @@
+export interface QuestionData {
+  id: string;
+  type: "mcq" | "scenario";
+  text: string;
+  options: Array<{ id: string; text: string }>;
+  correctOptionId: string;
+  explanation: string;
+  sortOrder: number;
+}
+
+export interface QuizData {
+  id: string;
+  type: "module" | "theme" | "scenario" | "final";
+  companySlug?: string;
+  themeSlug?: string;
+  title: string;
+  description: string;
+  passingScorePercent: number;
+  questions: QuestionData[];
+}
+
+export const SEEDED_BADGES = [
+  {
+    slug: "first-steps",
+    name: "First Steps",
+    description: "Completed your first AI company case study module.",
+    criteriaJson: { modules_completed: 1 },
+    icon: "🌱",
+  },
+  {
+    slug: "explorer",
+    name: "AI Explorer",
+    description: "Completed 5 in-depth AI company case study modules.",
+    criteriaJson: { modules_completed: 5 },
+    icon: "🧭",
+  },
+  {
+    slug: "theme-master",
+    name: "Theme Master",
+    description: "Successfully passed a comprehensive multi-company theme quiz.",
+    criteriaJson: { theme_quizzes_passed: 1 },
+    icon: "👑",
+  },
+  {
+    slug: "streak-7",
+    name: "Streak 7",
+    description: "Maintained an active 7-day continuous learning streak.",
+    criteriaJson: { streak_days: 7 },
+    icon: "🔥",
+  },
+];
+
+export const SEEDED_QUIZZES: QuizData[] = [
+  // 1. Sarvam AI Module Quiz
+  {
+    id: "quiz-sarvam-ai",
+    type: "module",
+    companySlug: "sarvam-ai",
+    title: "Sarvam AI Strategy & Architecture Quiz",
+    description: "Evaluate your understanding of vernacular tokenization, acoustic latency, and sovereign data residency moats.",
+    passingScorePercent: 70,
+    questions: [
+      {
+        id: "q-sarvam-1",
+        type: "mcq",
+        text: "Why do standard Western LLM tokenizers cause an economic penalty when processing Indic languages like Hindi and Tamil?",
+        options: [
+          { id: "opt-1", text: "They fragment Indic scripts into 4-8x more subword tokens, quadrupling API compute costs" },
+          { id: "opt-2", text: "They require GPUs with 128GB VRAM to load Sanskrit roots" },
+          { id: "opt-3", text: "They fail to compile on standard Linux CUDA kernels" },
+          { id: "opt-4", text: "They convert all Devanagari text into Latin phonetic characters first" },
+        ],
+        correctOptionId: "opt-1",
+        explanation: "Standard Latin-centric byte-pair tokenizers do not contain native Indic vocabulary, splitting single vernacular words into multiple disjoint byte tokens. This causes token inflation, multiplying inference compute expenses by 4-8x.",
+        sortOrder: 1,
+      },
+      {
+        id: "q-sarvam-2",
+        type: "mcq",
+        text: "What makes Sarvam's voice-first architecture suitable for Bharat's population-scale users?",
+        options: [
+          { id: "opt-1", text: "It bypasses keyboard input hurdles and multi-script literacy divides with sub-200ms latency" },
+          { id: "opt-2", text: "It only operates on high-end flagship iPhone devices" },
+          { id: "opt-3", text: "It replaces all spoken dialects with formal classical Sanskrit" },
+          { id: "opt-4", text: "It requires user speech to be completely noise-free" },
+        ],
+        correctOptionId: "opt-1",
+        explanation: "Voice interfaces bypass script literacy barriers, and sub-200ms acoustic quantization allows conversational fluidity over low-cost edge smartphones in noisy real-world conditions.",
+        sortOrder: 2,
+      },
+      {
+        id: "q-sarvam-3",
+        type: "mcq",
+        text: "Why is sovereign data residency a structural sales advantage for Sarvam AI with Indian public sector banks?",
+        options: [
+          { id: "opt-1", text: "RBI regulations and DPDP mandates require domestic data localization and on-premise air-gapped models" },
+          { id: "opt-2", text: "Foreign hyperscalers refuse to accept Indian Rupees for cloud billing" },
+          { id: "opt-3", text: "Public sector banks are legally forbidden from using neural network algorithms" },
+          { id: "opt-4", text: "All Indian banks share the exact same monolithic relational database" },
+        ],
+        correctOptionId: "opt-1",
+        explanation: "Indian financial regulators mandate that citizen PII and sensitive transactional data must reside domestically, making sovereign-compliant on-premise deployments an enterprise moat.",
+        sortOrder: 3,
+      },
+    ],
+  },
+
+  // 2. Krutrim Module Quiz
+  {
+    id: "quiz-krutrim",
+    type: "module",
+    companySlug: "krutrim",
+    title: "Krutrim Cloud & Silicon Architecture Quiz",
+    description: "Test your knowledge of vertical integration across AI silicon, data centers, and vernacular foundation models.",
+    passingScorePercent: 70,
+    questions: [
+      {
+        id: "q-krutrim-1",
+        type: "mcq",
+        text: "What strategic advantage does Krutrim gain from Ola's mobility and EV ecosystem?",
+        options: [
+          { id: "opt-1", text: "Zero-acquisition-cost real-world conversational data and anchor fleet workloads for testing" },
+          { id: "opt-2", text: "Electric scooter batteries directly power their data centers" },
+          { id: "opt-3", text: "Free gasoline imports from international oil refineries" },
+          { id: "opt-4", text: "Immediate exclusion from all Indian privacy regulations" },
+        ],
+        correctOptionId: "opt-1",
+        explanation: "Ola's existing consumer footprint gives Krutrim an immediate high-volume testbed, native mapping data, and built-in enterprise distribution.",
+        sortOrder: 1,
+      },
+      {
+        id: "q-krutrim-2",
+        type: "mcq",
+        text: "Why is Krutrim developing proprietary Bodhi silicon chips in addition to renting GPUs?",
+        options: [
+          { id: "opt-1", text: "To expand long-term gross margins and eliminate reliance on foreign GPU supply allocation" },
+          { id: "opt-2", text: "Because NVIDIA stopped selling chips to commercial enterprises" },
+          { id: "opt-3", text: "Because custom silicon cannot run standard matrix multiplication" },
+          { id: "opt-4", text: "To restrict their cloud only to Python 2.7 developers" },
+        ],
+        correctOptionId: "opt-1",
+        explanation: "Renting foreign GPUs exposes cloud providers to high capital expenditure and supply chain rationing; proprietary ASICs optimize inference margins.",
+        sortOrder: 2,
+      },
+      {
+        id: "q-krutrim-3",
+        type: "mcq",
+        text: "How many tokens was Krutrim's initial foundational corpus trained on across 22 scheduled Indian languages?",
+        options: [
+          { id: "opt-1", text: "2.0 Trillion Tokens" },
+          { id: "opt-2", text: "50 Million Tokens" },
+          { id: "opt-3", text: "500 Billion Tokens" },
+          { id: "opt-4", text: "10 Trillion Tokens" },
+        ],
+        correctOptionId: "opt-1",
+        explanation: "Krutrim announced that its foundation models were trained on over 2.0 trillion tokens covering official Indic languages and mixed vernacular corpora.",
+        sortOrder: 3,
+      },
+    ],
+  },
+
+  // 3. Cursor Module Quiz
+  {
+    id: "quiz-cursor",
+    type: "module",
+    companySlug: "cursor",
+    title: "Cursor (Anysphere) Developer Tooling Quiz",
+    description: "Assess your comprehension of AST code indexing, speculative decoding, and editor-native AI agent workflows.",
+    passingScorePercent: 70,
+    questions: [
+      {
+        id: "q-cursor-1",
+        type: "mcq",
+        text: "Why did Cursor's founders choose to fork VS Code rather than building a standard extension plugin?",
+        options: [
+          { id: "opt-1", text: "To control the entire editor UI chrome, inline predictive diffs, and terminal execution hooks" },
+          { id: "opt-2", text: "Because Microsoft banned all AI extensions on the VS Code Marketplace" },
+          { id: "opt-3", text: "To avoid writing any TypeScript or JavaScript code" },
+          { id: "opt-4", text: "Because browser extensions cannot connect to internet APIs" },
+        ],
+        correctOptionId: "opt-1",
+        explanation: "Controlling the editor frame allowed Cursor to render custom inline diff widgets, terminal interceptors, and shadow workspaces that the standard extension API cannot support.",
+        sortOrder: 1,
+      },
+      {
+        id: "q-cursor-2",
+        type: "mcq",
+        text: "What technical mechanism allows Cursor to index 50,000 repository files in under 40 seconds?",
+        options: [
+          { id: "opt-1", text: "Merkle-tree hash embeddings and local semantic symbol graph indexing" },
+          { id: "opt-2", text: "Uploading the entire repository as raw text to OpenAI in a single prompt" },
+          { id: "opt-3", text: "Deleting all comments and unit tests before compiling" },
+          { id: "opt-4", text: "Relying strictly on regex search without any vectors" },
+        ],
+        correctOptionId: "opt-1",
+        explanation: "Cursor builds incremental Merkle-tree embeddings of code symbols and file hashes, so only modified files need re-indexing upon git commits.",
+        sortOrder: 2,
+      },
+      {
+        id: "q-cursor-3",
+        type: "mcq",
+        text: "What is Cursor's primary go-to-market distribution model?",
+        options: [
+          { id: "opt-1", text: "Bottom-up product-led growth (PLG) where individual engineers adopt and pull in teams" },
+          { id: "opt-2", text: "Outbound cold-calling targeting Fortune 500 Chief Procurement Officers" },
+          { id: "opt-3", text: "Exclusive bundling with hardware laptops sold at Best Buy" },
+          { id: "opt-4", text: "Mandatory government school educational licensing" },
+        ],
+        correctOptionId: "opt-1",
+        explanation: "Cursor grew virally through individual developer word-of-mouth on X/GitHub, leading engineers to expense the $20/month Pro tier on corporate credit cards.",
+        sortOrder: 3,
+      },
+    ],
+  },
+
+  // 4. Harvey AI Module Quiz
+  {
+    id: "quiz-harvey-ai",
+    type: "module",
+    companySlug: "harvey-ai",
+    title: "Harvey AI LegalTech & Domain LLM Quiz",
+    description: "Verify your knowledge of verifiable RAG citations, legal malpractice risk mitigation, and high-ACV enterprise licensing.",
+    passingScorePercent: 70,
+    questions: [
+      {
+        id: "q-harvey-1",
+        type: "mcq",
+        text: "In the legal industry, why is hallucination mitigation more critical than conversational fluency?",
+        options: [
+          { id: "opt-1", text: "A single hallucinated citation can lead to judicial sanctions and multimillion-dollar malpractice liability" },
+          { id: "opt-2", text: "Attorneys only communicate using formal Latin phrases" },
+          { id: "opt-3", text: "Legal documents are strictly limited to 140 characters" },
+          { id: "opt-4", text: "Law firms are legally prohibited from paying for software" },
+        ],
+        correctOptionId: "opt-1",
+        explanation: "In high-stakes corporate litigation and M&A, every assertion must be cryptographically traced back to exact precedent clauses to prevent catastrophic legal liability.",
+        sortOrder: 1,
+      },
+      {
+        id: "q-harvey-2",
+        type: "mcq",
+        text: "What contract structure does Harvey AI employ with premier global law firms?",
+        options: [
+          { id: "opt-1", text: "High-ACV annual enterprise seat licensing ($1,200-$2,500/attorney/yr) with strict zero-data retention" },
+          { id: "opt-2", text: "Advertising-supported free tiers with banner ads on contracts" },
+          { id: "opt-3", text: "Commission-based fees taking 5% of client merger valuations" },
+          { id: "opt-4", text: "Cryptocurrency token micro-transactions per prompt" },
+        ],
+        correctOptionId: "opt-1",
+        explanation: "Harvey charges annual per-seat enterprise subscriptions with strict security guarantees that client contracts are never used to train shared base models.",
+        sortOrder: 2,
+      },
+      {
+        id: "q-harvey-3",
+        type: "mcq",
+        text: "Which premier international law firm served as Harvey's flagship anchor customer?",
+        options: [
+          { id: "opt-1", text: "Allen & Overy (now A&O Shearman)" },
+          { id: "opt-2", text: "McKinsey & Company" },
+          { id: "opt-3", text: "Goldman Sachs" },
+          { id: "opt-4", text: "United States Supreme Court" },
+        ],
+        correctOptionId: "opt-1",
+        explanation: "Allen & Overy rolled out Harvey to over 3,500 lawyers across 43 offices globally, legitimizing generative AI across the entire legal sector.",
+        sortOrder: 3,
+      },
+    ],
+  },
+
+  // 5. Perplexity AI Module Quiz
+  {
+    id: "quiz-perplexity-ai",
+    type: "module",
+    companySlug: "perplexity-ai",
+    title: "Perplexity AI Conversational Search Quiz",
+    description: "Evaluate your understanding of real-time web retrieval, multi-query synthesis, and publisher revenue sharing.",
+    passingScorePercent: 70,
+    questions: [
+      {
+        id: "q-perp-1",
+        type: "mcq",
+        text: "How does Perplexity reduce hallucination when answering complex, multi-part user queries?",
+        options: [
+          { id: "opt-1", text: "It decomposes the question into multiple live search queries, retrieving and grounding answers in cited sources" },
+          { id: "opt-2", text: "It only answers questions that were written before 2021" },
+          { id: "opt-3", text: "It asks Wikipedia editors to manually review every query before responding" },
+          { id: "opt-4", text: "It prevents users from asking follow-up questions" },
+        ],
+        correctOptionId: "opt-1",
+        explanation: "Perplexity splits queries into sub-searches, evaluates source authoritativeness, and synthesizes answers with inline citations linked to live web pages.",
+        sortOrder: 1,
+      },
+      {
+        id: "q-perp-2",
+        type: "mcq",
+        text: "What is the primary purpose of Perplexity's Publisher Revenue Share Program?",
+        options: [
+          { id: "opt-1", text: "To share advertising and subscription revenue with publishers whose journalism is cited in answers" },
+          { id: "opt-2", text: "To purchase print newspaper printing presses across the United States" },
+          { id: "opt-3", text: "To mandate that all news websites put up hard paywalls against Google" },
+          { id: "opt-4", text: "To pay users $0.10 for every search they conduct" },
+        ],
+        correctOptionId: "opt-1",
+        explanation: "Aligning with premium journalism publishers via revenue sharing protects the open web ecosystem and mitigates copyright litigation.",
+        sortOrder: 2,
+      },
+      {
+        id: "q-perp-3",
+        type: "mcq",
+        text: "What latency benchmark does Perplexity maintain for end-to-end web retrieval and LLM synthesis?",
+        options: [
+          { id: "opt-1", text: "Under 1.5 - 2.0 seconds" },
+          { id: "opt-2", text: "15 to 30 seconds" },
+          { id: "opt-3", text: "Over 2 minutes" },
+          { id: "opt-4", text: "Instantaneous zero milliseconds" },
+        ],
+        correctOptionId: "opt-1",
+        explanation: "Speed is a core habit-forming moat: Perplexity streams citations and answers in ~1.4 seconds, rivaling traditional link search latency.",
+        sortOrder: 3,
+      },
+    ],
+  },
+
+  // 6. ElevenLabs Module Quiz
+  {
+    id: "quiz-elevenlabs",
+    type: "module",
+    companySlug: "elevenlabs",
+    title: "ElevenLabs Speech Synthesis & Dubbing Quiz",
+    description: "Test your understanding of zero-shot voice cloning, emotional cadence, and voice actor marketplace royalties.",
+    passingScorePercent: 70,
+    questions: [
+      {
+        id: "q-eleven-1",
+        type: "mcq",
+        text: "What technical breakthrough allowed ElevenLabs to surpass traditional robotic text-to-speech?",
+        options: [
+          { id: "opt-1", text: "Latent acoustic diffusion modeling human breath, pauses, cadence, and emotional inflection" },
+          { id: "opt-2", text: "Storing 100 million pre-recorded MP3 clips of every possible English sentence" },
+          { id: "opt-3", text: "Speeding up standard robotic audio by 1.5x" },
+          { id: "opt-4", text: "Using MIDI synthesizers instead of neural networks" },
+        ],
+        correctOptionId: "opt-1",
+        explanation: "ElevenLabs models speech contextually, generating natural micro-pauses, breaths, and pitch changes tailored to the sentiment of the text.",
+        sortOrder: 1,
+      },
+      {
+        id: "q-eleven-2",
+        type: "mcq",
+        text: "How does the ElevenLabs Voice Library turn voice actors into long-term stakeholders?",
+        options: [
+          { id: "opt-1", text: "Actors license their verified voice clones and earn recurring cash royalties every time users generate audio with it" },
+          { id: "opt-2", text: "Actors are given equity shares in YouTube" },
+          { id: "opt-3", text: "Actors are required to never work in Hollywood again" },
+          { id: "opt-4", text: "It pays actors once with a fixed gift card" },
+        ],
+        correctOptionId: "opt-1",
+        explanation: "The marketplace monetizes voice likeness through micro-royalties, turning generative AI from an adversarial threat into a passive income stream for talent.",
+        sortOrder: 2,
+      },
+      {
+        id: "q-eleven-3",
+        type: "mcq",
+        text: "How much audio sample is required for ElevenLabs' one-shot instant voice cloning?",
+        options: [
+          { id: "opt-1", text: "Roughly 60 seconds of clean audio" },
+          { id: "opt-2", text: "At least 100 hours of studio recordings" },
+          { id: "opt-3", text: "A minimum of 5 years of podcast episodes" },
+          { id: "opt-4", text: "Zero seconds, it guesses voices randomly" },
+        ],
+        correctOptionId: "opt-1",
+        explanation: "Zero-shot cloning extracts speaker timbre, pitch, and accent embeddings from approximately 1 minute of clear speech.",
+        sortOrder: 3,
+      },
+    ],
+  },
+
+  // 7. Yellow.ai Module Quiz
+  {
+    id: "quiz-yellow-ai",
+    type: "module",
+    companySlug: "yellow-ai",
+    title: "Yellow.ai Enterprise Conversational Agents Quiz",
+    description: "Assess your knowledge of DynamicNLP, autonomous interaction pricing, and CRM read-write integrations.",
+    passingScorePercent: 70,
+    questions: [
+      {
+        id: "q-yellow-1",
+        type: "mcq",
+        text: "What pricing model did Yellow.ai adopt to align vendor revenue with customer value?",
+        options: [
+          { id: "opt-1", text: "Outcome-based pricing per Autonomous Interaction (queries resolved without human intervention)" },
+          { id: "opt-2", text: "Charging per character typed by the human customer" },
+          { id: "opt-3", text: "Flat $5 per company regardless of volume" },
+          { id: "opt-4", text: "Selling advertising slots inside banking customer service chats" },
+        ],
+        correctOptionId: "opt-1",
+        explanation: "Charging per successfully deflected/resolved autonomous conversation directly aligns Yellow.ai's incentives with client support labor savings.",
+        sortOrder: 1,
+      },
+      {
+        id: "q-yellow-2",
+        type: "mcq",
+        text: "Why are bi-directional read-write CRM/ERP integrations critical for enterprise support bots?",
+        options: [
+          { id: "opt-1", text: "They allow the AI to take real actions (e.g. process refunds, change flight dates, update shipping) rather than merely providing static FAQs" },
+          { id: "opt-2", text: "They prevent the enterprise from using any other software" },
+          { id: "opt-3", text: "They reduce customer internet bandwidth by 90%" },
+          { id: "opt-4", text: "They automatically delete old customer records" },
+        ],
+        correctOptionId: "opt-1",
+        explanation: "Autonomous resolution requires transactional actionability—canceling orders, updating addresses in SAP/Salesforce, and verifying account status in real-time.",
+        sortOrder: 2,
+      },
+      {
+        id: "q-yellow-3",
+        type: "mcq",
+        text: "Across how many digital and voice channels does Yellow.ai orchestrate conversational agents?",
+        options: [
+          { id: "opt-1", text: "35+ channels including WhatsApp, telephony, web, and Instagram" },
+          { id: "opt-2", text: "Only 1 channel (desktop web browser)" },
+          { id: "opt-3", text: "Exclusively SMS text messaging" },
+          { id: "opt-4", text: "Paper mail dispatch" },
+        ],
+        correctOptionId: "opt-1",
+        explanation: "Yellow.ai provides omnichannel support across 35+ messaging apps, telephony IVR systems, and mobile SDKs.",
+        sortOrder: 3,
+      },
+    ],
+  },
+
+  // 8. Observe.ai Module Quiz
+  {
+    id: "quiz-observe-ai",
+    type: "module",
+    companySlug: "observe-ai",
+    title: "Observe.ai Speech Intelligence & Coaching Quiz",
+    description: "Test your comprehension of contact center compliance, 8kHz telephony transcription, and real-time guidance.",
+    passingScorePercent: 70,
+    questions: [
+      {
+        id: "q-observe-1",
+        type: "mcq",
+        text: "Why is real-time agent guidance significantly more impactful than post-call analytics?",
+        options: [
+          { id: "opt-1", text: "It allows the agent to correct compliance errors and handle customer objections while the live call is still happening" },
+          { id: "opt-2", text: "It eliminates the need for customer service phone calls altogether" },
+          { id: "opt-3", text: "It records audio at 96kHz studio quality" },
+          { id: "opt-4", text: "It automatically hangs up on angry customers" },
+        ],
+        correctOptionId: "opt-1",
+        explanation: "Live guidance coaches agents during critical moments—suggesting rebuttal scripts or compliance disclosures before the caller disconnects.",
+        sortOrder: 1,
+      },
+      {
+        id: "q-observe-2",
+        type: "mcq",
+        text: "What percentage of calls do traditional contact center human QA teams audit manually?",
+        options: [
+          { id: "opt-1", text: "Less than 2% of total calls" },
+          { id: "opt-2", text: "100% of all calls" },
+          { id: "opt-3", text: "50% of inbound calls" },
+          { id: "opt-4", text: "Only calls that exceed 1 hour" },
+        ],
+        correctOptionId: "opt-1",
+        explanation: "Manual human auditing evaluates under 2% of calls, leaving 98% of customer interactions unmonitored for regulatory compliance or sales opportunities.",
+        sortOrder: 2,
+      },
+      {
+        id: "q-observe-3",
+        type: "mcq",
+        text: "What acoustic challenge is unique to enterprise contact center speech transcription?",
+        options: [
+          { id: "opt-1", text: "Handling low-bitrate 8kHz telephony audio with background chatter and simultaneous cross-talk" },
+          { id: "opt-2", text: "Transcribing operatic singing voices" },
+          { id: "opt-3", text: "Translating Morse code transmissions" },
+          { id: "opt-4", text: "Streaming Dolby Atmos surround sound" },
+        ],
+        correctOptionId: "opt-1",
+        explanation: "Standard public phone networks downsample audio to 8kHz, introducing noise, compression artifacts, and overlapping speech that standard ASR models struggle to parse.",
+        sortOrder: 3,
+      },
+    ],
+  },
+
+  // 9. Theme Quiz: Sovereign & Multilingual AI
+  {
+    id: "quiz-theme-sovereign",
+    type: "theme",
+    themeSlug: "sovereign-multilingual-ai",
+    title: "Theme Mastery: Sovereign & Multilingual AI",
+    description: "Comprehensive 8-question evaluation on vernacular tokenization, compute independence, and non-Western AI market dynamics.",
+    passingScorePercent: 70,
+    questions: [
+      {
+        id: "q-th-sov-1",
+        type: "mcq",
+        text: "What is the primary technical cause of the 'tokenization tax' for non-Latin script languages in global LLMs?",
+        options: [
+          { id: "opt-1", text: "Western tokenizers lack Indic/Arabic vocabulary tokens, fragmenting words into byte-level sequences" },
+          { id: "opt-2", text: "Non-Latin scripts require 10x higher GPU memory clock frequencies" },
+          { id: "opt-3", text: "ASCII character encodings cannot represent Unicode without hardware translation" },
+          { id: "opt-4", text: "Transformer attention mechanisms cannot compute non-English syntax trees" },
+        ],
+        correctOptionId: "opt-1",
+        explanation: "When vocabularies are trained on English text, non-Latin words get broken down into individual bytes or sub-characters, resulting in 4-8x higher token count for identical semantic meaning.",
+        sortOrder: 1,
+      },
+      {
+        id: "q-th-sov-2",
+        type: "mcq",
+        text: "Why is domestic data residency becoming a mandatory procurement requirement for sovereign AI deployments?",
+        options: [
+          { id: "opt-1", text: "National privacy laws (e.g. India's DPDP, EU GDPR) prohibit sensitive citizen data from transferring to foreign cloud jurisdictions" },
+          { id: "opt-2", text: "Transatlantic fiber-optic cables are at 100% capacity" },
+          { id: "opt-3", text: "Foreign hyperscalers cannot store relational SQL data" },
+          { id: "opt-4", text: "Domestic servers run at twice the speed of light" },
+        ],
+        correctOptionId: "opt-1",
+        explanation: "Sovereign compliance regulations prevent defense, healthcare, and financial records from traversing foreign boundaries.",
+        sortOrder: 2,
+      },
+      {
+        id: "q-th-sov-3",
+        type: "mcq",
+        text: "Which company is building custom silicon (Bodhi processors) to reduce dependency on foreign GPU imports in India?",
+        options: [
+          { id: "opt-1", text: "Krutrim" },
+          { id: "opt-2", text: "ElevenLabs" },
+          { id: "opt-3", text: "Cursor" },
+          { id: "opt-4", text: "Harvey AI" },
+        ],
+        correctOptionId: "opt-1",
+        explanation: "Bhavish Aggarwal's Krutrim unveiled a long-term silicon architecture roadmap for proprietary Bodhi processors.",
+        sortOrder: 3,
+      },
+      {
+        id: "q-th-sov-4",
+        type: "mcq",
+        text: "What unique linguistic trait makes conversational voice AI challenging in urban Indian markets?",
+        options: [
+          { id: "opt-1", text: "Frequent bilingual code-switching (e.g. 'Hinglish', 'Tanglish') within a single sentence" },
+          { id: "opt-2", text: "Speakers only use written letters instead of voice" },
+          { id: "opt-3", text: "Everyone speaks with an identical accent" },
+          { id: "opt-4", text: "No one uses cellular mobile phones" },
+        ],
+        correctOptionId: "opt-1",
+        explanation: "Code-switching mixes vocabulary and grammar from multiple languages seamlessly, causing monolingual acoustic models to fail.",
+        sortOrder: 4,
+      },
+      {
+        id: "q-th-sov-5",
+        type: "mcq",
+        text: "How does Sarvam's custom byte-pair tokenizer improve economics for vernacular developers?",
+        options: [
+          { id: "opt-1", text: "It achieves near parity with English token efficiency, cutting API costs by ~70%" },
+          { id: "opt-2", text: "It makes developers pay in US dollars rather than Rupees" },
+          { id: "opt-3", text: "It converts all words into 1-character emojis" },
+          { id: "opt-4", text: "It limits developer queries to 10 tokens per day" },
+        ],
+        correctOptionId: "opt-1",
+        explanation: "Reducing token fragmentation directly lowers the number of forward passes through the model, dropping inference expenses.",
+        sortOrder: 5,
+      },
+    ],
+  },
+  // 10. Scenario Strategy Simulation Quiz
+  {
+    id: "quiz-scenario-strategy",
+    type: "scenario",
+    title: "AI Executive Strategy & Architecture Dilemmas",
+    description: "Navigate real-world executive scenarios: enterprise data privacy, model routing trade-offs, inference unit economics, and latency optimization.",
+    passingScorePercent: 70,
+    questions: [
+      {
+        id: "sc-1",
+        type: "scenario",
+        text: "A Tier-1 hospital chain wants an AI assistant for patient triage and clinical record summarization. State regulations forbid patient PHI from exiting domestic soil or training third-party foundation models. Which deployment architecture delivers maximum compliance without sacrificing clinical accuracy?",
+        options: [
+          { id: "opt-1", text: "Air-gapped on-premise deployment of an open-weights fine-tuned SLM (e.g., Llama 3 8B / Mistral) with localized vector database retrieval" },
+          { id: "opt-2", text: "Public API call to a multi-tenant cloud frontier model using a free consumer tier" },
+          { id: "opt-3", text: "Sending hashed patient names to a public chatbot and asking nurses to reconstruct IDs manually" },
+          { id: "opt-4", text: "Running pure keyword search without any neural embeddings or language models" },
+        ],
+        correctOptionId: "opt-1",
+        explanation: "Air-gapped, on-premise or sovereign VPC hosting of specialized open-weight models ensures zero data leakage, strict HIPAA/DPDP compliance, and dedicated latency SLAs while maintaining state-of-the-art clinical reasoning.",
+        sortOrder: 1,
+      },
+      {
+        id: "sc-2",
+        type: "scenario",
+        text: "Your voice AI startup is building an automated phone agent for banking call centers. User testing shows callers hang up if response delay exceeds 600ms. Your multi-agent reasoning chain currently takes 1.8s. What optimization delivers the largest latency reduction?",
+        options: [
+          { id: "opt-1", text: "Speculative streaming: stream early acoustic tokens immediately while concurrently invoking a lightweight classifier for common intents" },
+          { id: "opt-2", text: "Switching from 4-bit quantization to full 32-bit floating point precision" },
+          { id: "opt-3", text: "Adding 3 extra verification loops with a slow frontier reasoning model" },
+          { id: "opt-4", text: "Asking callers to speak strictly in English irrespective of their regional native language" },
+        ],
+        correctOptionId: "opt-1",
+        explanation: "Speculative streaming pipeline and intent classification short-circuiting bypass heavy reasoning LLMs for routine workflows, keeping audio conversational latency well under the human perceptual hesitation threshold (<400ms).",
+        sortOrder: 2,
+      },
+      {
+        id: "sc-3",
+        type: "scenario",
+        text: "A legal tech startup noticed their RAG pipeline fails on complex contractual indemnity clauses because basic cosine similarity returns irrelevant definitions instead of cross-referenced clauses. How should the engineering team refactor the retrieval architecture?",
+        options: [
+          { id: "opt-1", text: "Implement Hybrid Search (BM25 keyword + dense semantic embeddings) followed by a cross-encoder Reranker and parent-document chunk mapping" },
+          { id: "opt-2", text: "Reduce chunk size to 10 words and increase top-k to 200 without reranking" },
+          { id: "opt-3", text: "Remove the retrieval index completely and dump 5,000 pages directly into a single prompt" },
+          { id: "opt-4", text: "Switch vector database providers without altering chunking or embedding models" },
+        ],
+        correctOptionId: "opt-1",
+        explanation: "Hybrid search combines lexical precision (statutory terms, section numbers) with semantic nuance, while a cross-encoder reranker scores contextual alignment across interrelated clauses, eliminating hallucination in specialized domains.",
+        sortOrder: 3,
+      },
+      {
+        id: "sc-4",
+        type: "scenario",
+        text: "An AI coding platform charges users $20/month flat fee. Power users generate 150,000 frontier model tokens daily, causing the startup to lose $12/user/month in cloud inference fees. How can the business restore positive gross margins without degrading code quality?",
+        options: [
+          { id: "opt-1", text: "Implement a tiered cascade router: route routine completions to low-cost local/SLMs and reserve expensive frontier models for complex multi-file refactoring" },
+          { id: "opt-2", text: "Cut token rate limits to 5 completions per day for all paying customers" },
+          { id: "opt-3", text: "Remove prompt caching and re-send the entire repo AST on every single keypress" },
+          { id: "opt-4", text: "Double the subscription price immediately without adding differentiated features" },
+        ],
+        correctOptionId: "opt-1",
+        explanation: "Model cascade routing (e.g. Cursor's approach) sends ~80% of routine single-line tab suggestions to ultra-fast, cheap specialized models, reserving expensive reasoning models only for high-entropy multi-step edits, driving 70%+ gross margins.",
+        sortOrder: 4,
+      },
+      {
+        id: "sc-5",
+        type: "scenario",
+        text: "A fintech startup deploying an automated loan approval agent experiences accuracy drift where edge-case credit applications receive inconsistent decisions across different model version updates. What production governance framework should they implement?",
+        options: [
+          { id: "opt-1", text: "Establish an automated evaluation harness with synthetic test sets, golden human-reviewed baselines, and shadow production traffic comparison" },
+          { id: "opt-2", text: "Automatically deploy latest model checkpoints directly to production without staging" },
+          { id: "opt-3", text: "Rely exclusively on subjective user reviews on social media" },
+          { id: "opt-4", text: "Disable all logging to reduce cloud storage expenditure" },
+        ],
+        correctOptionId: "opt-1",
+        explanation: "Continuous CI/CD eval harnesses comparing new model weights against a benchmarked golden dataset and running in shadow mode prevent regressions and silent behavior drift in regulated high-stakes domains.",
+        sortOrder: 5,
+      },
+      {
+        id: "sc-6",
+        type: "scenario",
+        text: "An autonomous enterprise agent is designed to execute database updates and bank disbursements. Which risk mitigation pattern prevents catastrophic unauthorized transactions?",
+        options: [
+          { id: "opt-1", text: "Deterministic Guardrails + Human-in-the-Loop (HITL) approval gates for actions exceeding predefined financial thresholds" },
+          { id: "opt-2", text: "Prompting the model with 'Please be very careful and do not make mistakes'" },
+          { id: "opt-3", text: "Giving the agent unrestricted root administrative access to production SQL databases" },
+          { id: "opt-4", text: "Running the agent in an infinite autonomous loop without timeout interrupts" },
+        ],
+        correctOptionId: "opt-1",
+        explanation: "Deterministic guardrails and HITL thresholds ensure catastrophic write actions cannot be executed purely through non-deterministic model probabilistic outputs without explicit authorized personnel verification.",
+        sortOrder: 6,
+      },
+    ],
+  },
+  // 11. Comprehensive Final AI Mastery Certification Quiz
+  {
+    id: "quiz-final-mastery",
+    type: "final",
+    title: "AI Startup Architecture & Business Mastery Assessment",
+    description: "The official capstone assessment for certification. Validates end-to-end expertise across model architectures, unit economics, regulatory moats, and production scaling.",
+    passingScorePercent: 70,
+    questions: [
+      {
+        id: "fin-1",
+        type: "mcq",
+        text: "Which technical breakthrough allowed Cursor to achieve rapid multi-token code predictions faster than conventional LLM streaming APIs?",
+        options: [
+          { id: "opt-1", text: "Speculative decoding using custom shadow draft models paired with prompt KV-cache reuse" },
+          { id: "opt-2", text: "Running code generation on client-side CPU browser WebAssembly" },
+          { id: "opt-3", text: "Disabling syntax validation and language server protocol integration" },
+          { id: "opt-4", text: "Restricting developer editing to files under 50 lines of code" },
+        ],
+        correctOptionId: "opt-1",
+        explanation: "Cursor uses speculative decoding where a small, ultra-fast draft model proposes token completions validated in parallel by a larger verifier model, reducing per-token generation latency by over 60%.",
+        sortOrder: 1,
+      },
+      {
+        id: "fin-2",
+        type: "mcq",
+        text: "In vertical legal AI (e.g. Harvey AI), why is raw LLM pretraining insufficient without specialized domain adaptation?",
+        options: [
+          { id: "opt-1", text: "Legal reasoning requires verifiable pinpoint case law citation, jurisdictional recency, and strict anti-hallucination guardrails" },
+          { id: "opt-2", text: "General LLMs are legally barred from reading courtroom transcripts" },
+          { id: "opt-3", text: "Attorneys only use paper filing systems and cannot read digital screens" },
+          { id: "opt-4", text: "Legal documents are written exclusively in binary machine code" },
+        ],
+        correctOptionId: "opt-1",
+        explanation: "Law firms require zero-tolerance for fabrication, mandatory Shepardizing/citation verification against jurisdictional statutes, and strict multi-tenant enterprise data boundary guarantees.",
+        sortOrder: 2,
+      },
+      {
+        id: "fin-3",
+        type: "mcq",
+        text: "What fundamental economic barrier does Sarvam AI solve for Indic language computing?",
+        options: [
+          { id: "opt-1", text: "Byte token fragmentation: vernacular scripts previously required up to 8x more tokens per word than English" },
+          { id: "opt-2", text: "Indian servers cannot resolve IPv6 internet addresses" },
+          { id: "opt-3", text: "GPUs are unable to calculate floating point operations for Hindi numbers" },
+          { id: "opt-4", text: "Lack of optical fiber connectivity in metropolitan financial hubs" },
+        ],
+        correctOptionId: "opt-1",
+        explanation: "By redesigning byte-pair tokenizers trained specifically on Indic vernacular corpora, Sarvam eliminated token inflation, bringing compute costs and inference latency down to parity with English text.",
+        sortOrder: 3,
+      },
+      {
+        id: "fin-4",
+        type: "mcq",
+        text: "How does Perplexity AI mitigate real-time hallucination while acting as an answer engine?",
+        options: [
+          { id: "opt-1", text: "Agentic search-retrieval loops that extract citations from live web indices and anchor claims directly to authoritative URLs" },
+          { id: "opt-2", text: "Pre-caching the entire internet into model static weights every 5 minutes" },
+          { id: "opt-3", text: "Generating fictional answers and asking users to fact-check them on Wikipedia" },
+          { id: "opt-4", text: "Forwarding all user search queries to human telephone operators" },
+        ],
+        correctOptionId: "opt-1",
+        explanation: "Perplexity parses user intent, executes multi-source live web queries, filters for trusted authoritative domains, and synthesizes answers with mandatory bracketed citations.",
+        sortOrder: 4,
+      },
+      {
+        id: "fin-5",
+        type: "mcq",
+        text: "What architectural approach enables ElevenLabs to achieve emotional prosody and human nuance in text-to-speech synthesis?",
+        options: [
+          { id: "opt-1", text: "Context-aware acoustic neural transformers that infer emotion and pacing from semantic narrative context" },
+          { id: "opt-2", text: "Playing pre-recorded human MP3 clips stitched together alphabetically" },
+          { id: "opt-3", text: "Using MIDI synthesizers without machine learning" },
+          { id: "opt-4", text: "Limiting speech output to single-word utterances under 1 second" },
+        ],
+        correctOptionId: "opt-1",
+        explanation: "ElevenLabs conditions speech generation on broad narrative semantics rather than phoneme-by-phoneme conversion, enabling realistic laughter, whisper, breath control, and dramatic cadence.",
+        sortOrder: 5,
+      },
+      {
+        id: "fin-6",
+        type: "mcq",
+        text: "In video generation startups like Runway, what is the primary computational bottleneck compared to text or audio generation?",
+        options: [
+          { id: "opt-1", text: "Spatio-temporal consistency across millions of 3D latent pixels across consecutive frames" },
+          { id: "opt-2", text: "Audio frequency compression algorithms" },
+          { id: "opt-3", text: "Text font rendering speed" },
+          { id: "opt-4", text: "Database primary key indexing" },
+        ],
+        correctOptionId: "opt-1",
+        explanation: "Diffusion video generation models must maintain visual physics, object identity, and lighting coherence across both spatial dimensions (height/width) and the temporal dimension (time steps), multiplying GPU VRAM demand.",
+        sortOrder: 6,
+      },
+      {
+        id: "fin-7",
+        type: "mcq",
+        text: "What key enterprise compliance feature is essential for Synthesia's synthetic video avatar platform to prevent deepfake exploitation?",
+        options: [
+          { id: "opt-1", text: "Strict voice/face consent verification, C2PA cryptographic watermarking, and AI content moderation" },
+          { id: "opt-2", text: "Allowing users to upload any celebrity photo without verification" },
+          { id: "opt-3", text: "Making all generated videos anonymous and untraceable" },
+          { id: "opt-4", text: "Deleting all audit trails after video compilation" },
+        ],
+        correctOptionId: "opt-1",
+        explanation: "Enterprise security requires biometric explicit consent, digital provenance metadata (C2PA standard), and automated multi-stage moderation before rendering synthetic avatars.",
+        sortOrder: 7,
+      },
+      {
+        id: "fin-8",
+        type: "mcq",
+        text: "What is the strategic rationale behind Krutrim investing in full-stack infrastructure ranging from data centers and Bodhi silicon to foundation models?",
+        options: [
+          { id: "opt-1", text: "Minimizing external currency outflows and securing sovereign technological independence from foreign GPU monopolies" },
+          { id: "opt-2", text: "Silicon chip manufacturing requires zero capital expenditure" },
+          { id: "opt-3", text: "Foreign cloud providers refuse to connect to internet cables" },
+          { id: "opt-4", text: "CPUs are proven to be faster than neural tensor processing units" },
+        ],
+        correctOptionId: "opt-1",
+        explanation: "Vertical integration from chips to consumer apps protects domestic AI infrastructure from geopolitical export controls, pricing surges, and sovereign compliance vulnerabilities.",
+        sortOrder: 8,
+      },
+      {
+        id: "fin-9",
+        type: "mcq",
+        text: "When evaluating an AI startup's business model, what metric best reflects whether an enterprise AI application has true product-market fit versus novelty trial?",
+        options: [
+          { id: "opt-1", text: "Net Revenue Retention (NRR) >120% and daily recurring operational workflow embedding" },
+          { id: "opt-2", text: "Total number of viral posts on LinkedIn" },
+          { id: "opt-3", text: "Gross margin below 10% caused by subsidized API credits" },
+          { id: "opt-4", text: "A 90% drop in user usage after the free trial expires" },
+        ],
+        correctOptionId: "opt-1",
+        explanation: "True enterprise value is evidenced by expansion spend (NRR > 120%) and deep operational entrenchment where customer teams rely on the AI agent as a non-discretionary productivity utility.",
+        sortOrder: 9,
+      },
+      {
+        id: "fin-10",
+        type: "mcq",
+        text: "What is the core difference between a naive 'thin LLM wrapper' and a defensible vertical AI application?",
+        options: [
+          { id: "opt-1", text: "Proprietary workflow integration, domain-specific evaluation loops, cumulative user data flywheels, and low-latency system architectures" },
+          { id: "opt-2", text: "Having a prettier marketing website and higher prices" },
+          { id: "opt-3", text: "Using an older model version without API keys" },
+          { id: "opt-4", text: "Exclusively using consumer prompt templates copied from public forums" },
+        ],
+        correctOptionId: "opt-1",
+        explanation: "Defensibility stems from system-level integration: deeply entrenched user workflows, proprietary domain fine-tuning, specialized evaluation data moats, and architectural speed advantages that commodity foundation models cannot replicate out of the box.",
+        sortOrder: 10,
+      },
+    ],
+  },
+];
