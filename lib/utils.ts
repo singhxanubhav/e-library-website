@@ -20,9 +20,22 @@ export function formatCurrency(amount: number): string {
 
 export function getInitials(name: string): string {
   if (!name) return "AI";
-  const parts = name.trim().split(/\s+/);
-  if (parts.length === 1) {
-    return parts[0].substring(0, 2).toUpperCase();
+  // Remove text in parentheses/brackets e.g. "Jigyasa (Founder)" -> "Jigyasa"
+  const cleaned = name.replace(/\s*[\(\[\{].*?[\)\]\}]\s*/g, " ").trim();
+  // Extract alphanumeric tokens
+  const words = cleaned
+    .split(/\s+/)
+    .map((w) => w.replace(/[^a-zA-Z0-9]/g, ""))
+    .filter(Boolean);
+
+  if (words.length === 0) {
+    const rawAlpha = name.replace(/[^a-zA-Z0-9]/g, "");
+    return rawAlpha.substring(0, 2).toUpperCase() || "AI";
   }
-  return (parts[0][0] + parts[parts.length - 1][0]).toUpperCase();
+
+  if (words.length === 1) {
+    return words[0].substring(0, 2).toUpperCase();
+  }
+
+  return (words[0][0] + words[words.length - 1][0]).toUpperCase();
 }
