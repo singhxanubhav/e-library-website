@@ -33,6 +33,7 @@ import {
   DialogDescription,
 } from "@/components/ui/dialog";
 import { QuizPlayer } from "@/components/quiz/quiz-player";
+import { AlertModal } from "@/components/ui/alert-modal";
 
 interface QuizItem {
   id: string;
@@ -88,6 +89,15 @@ export default function QuizCertificateHubPage() {
   const [generatingCert, setGeneratingCert] = React.useState(false);
   const [activeQuizId, setActiveQuizId] = React.useState<string | null>(null);
   const [activeQuizTitle, setActiveQuizTitle] = React.useState<string>("");
+  const [alertInfo, setAlertInfo] = React.useState<{
+    open: boolean;
+    message: string;
+    title?: string;
+    variant?: "error" | "success" | "info";
+  }>({
+    open: false,
+    message: "",
+  });
 
   const fetchStatus = React.useCallback(async () => {
     try {
@@ -144,11 +154,21 @@ export default function QuizCertificateHubPage() {
       if (res.ok && json.certificate) {
         router.push(`/certificate/${json.certificate.id || json.certificate.verificationId}`);
       } else {
-        alert(json.error || "Could not generate certificate");
+        setAlertInfo({
+          open: true,
+          title: "Certificate Ineligible",
+          message: json.error || "Could not generate certificate. Please ensure all completion criteria are met.",
+          variant: "error",
+        });
       }
     } catch (err) {
       console.error(err);
-      alert("An unexpected error occurred generating certificate.");
+      setAlertInfo({
+        open: true,
+        title: "Generation Error",
+        message: "An unexpected error occurred while generating your certificate.",
+        variant: "error",
+      });
     } finally {
       setGeneratingCert(false);
     }
@@ -570,6 +590,15 @@ export default function QuizCertificateHubPage() {
             )}
           </DialogContent>
         </Dialog>
+
+        {/* Feedback Alert Modal */}
+        <AlertModal
+          open={alertInfo.open}
+          onOpenChange={(open) => setAlertInfo((prev) => ({ ...prev, open }))}
+          title={alertInfo.title}
+          message={alertInfo.message}
+          variant={alertInfo.variant}
+        />
       </div>
     </div>
   );
