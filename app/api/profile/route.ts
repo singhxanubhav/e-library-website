@@ -158,18 +158,41 @@ export async function PUT(request: NextRequest) {
       );
     }
 
+    const userEmail = session.user.email?.toLowerCase().trim();
+    let updatedUser: any = null;
+
     try {
-      const updated = await prisma.user.update({
-        where: { id: session.user.id },
-        data: { name: parsed.data.name },
-        select: { id: true, name: true, email: true },
-      });
-      return NextResponse.json({ user: updated });
+      if (userEmail) {
+        updatedUser = await prisma.user.upsert({
+          where: { email: userEmail },
+          update: { name: parsed.data.name },
+          create: {
+            id: session.user.id,
+            name: parsed.data.name,
+            email: userEmail,
+            passwordHash: "",
+            role: (session.user.role as any) || "learner",
+          },
+          select: { id: true, name: true, email: true, role: true },
+        });
+      } else {
+        updatedUser = await prisma.user.update({
+          where: { id: session.user.id },
+          data: { name: parsed.data.name },
+          select: { id: true, name: true, email: true, role: true },
+        });
+      }
     } catch (err) {
-      return NextResponse.json({
-        user: { id: session.user.id, name: parsed.data.name, email: session.user.email },
-      });
+      console.warn("DB user update fallback in profile PUT:", err);
+      updatedUser = {
+        id: session.user.id,
+        name: parsed.data.name,
+        email: session.user.email,
+        role: session.user.role,
+      };
     }
+
+    return NextResponse.json({ user: updatedUser });
   } catch (error) {
     console.error("Error in PUT /api/profile:", error);
     return NextResponse.json(

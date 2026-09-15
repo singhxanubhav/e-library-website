@@ -33,13 +33,23 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 import { getInitials } from "@/lib/utils";
+import { AlertModal } from "@/components/ui/alert-modal";
 
 export default function ProfilePage() {
-  const { data: session, status } = useSession();
+  const { data: session, status, update } = useSession();
   const router = useRouter();
 
   const [profileData, setProfileData] = React.useState<any>(null);
   const [loading, setLoading] = React.useState(true);
+  const [alertInfo, setAlertInfo] = React.useState<{
+    open: boolean;
+    title?: string;
+    message: string;
+    variant?: "error" | "success" | "info";
+  }>({
+    open: false,
+    message: "",
+  });
 
   // Dialog states
   const [isPasswordModalOpen, setIsPasswordModalOpen] = React.useState(false);
@@ -123,10 +133,32 @@ export default function ProfilePage() {
       });
       if (res.ok) {
         setIsEditingName(false);
+        await update({ name: nameVal.trim() });
         loadProfile();
+        router.refresh();
+        setAlertInfo({
+          open: true,
+          title: "Profile Updated",
+          message: "Your name has been updated successfully! The header avatar reflects your new initials.",
+          variant: "success",
+        });
+      } else {
+        const err = await res.json();
+        setAlertInfo({
+          open: true,
+          title: "Update Failed",
+          message: err.error || "Failed to update profile name.",
+          variant: "error",
+        });
       }
     } catch (e) {
       console.error(e);
+      setAlertInfo({
+        open: true,
+        title: "Network Error",
+        message: "An error occurred while saving your name.",
+        variant: "error",
+      });
     }
   };
 
@@ -493,6 +525,15 @@ export default function ProfilePage() {
           </div>
         </DialogContent>
       </Dialog>
+
+      {/* Profile Feedback Alert Modal */}
+      <AlertModal
+        open={alertInfo.open}
+        onOpenChange={(open) => setAlertInfo((prev) => ({ ...prev, open }))}
+        title={alertInfo.title}
+        message={alertInfo.message}
+        variant={alertInfo.variant}
+      />
     </div>
   );
 }
