@@ -86,6 +86,12 @@ export default function AdminQuizzesPage() {
         setOpenCreate(false);
         setForm({ title: "", description: "", type: "module", passingScorePercent: "70" });
         loadQuizzes();
+        setAlertInfo({
+          open: true,
+          title: "Assessment Created",
+          message: "Assessment module has been created and published successfully!",
+          variant: "success",
+        });
       } else {
         const err = await res.json();
         setAlertInfo({

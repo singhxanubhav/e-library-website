@@ -51,34 +51,44 @@ export async function POST(request: NextRequest) {
     const body = await request.json();
     const { name, slug, description } = body;
 
-    if (!name || !slug) {
-      return NextResponse.json({ error: "Name and slug are required" }, { status: 400 });
+    if (!name) {
+      return NextResponse.json({ error: "Name is required" }, { status: 400 });
     }
 
-    let createdTheme: any = null;
+    const cleanSlug = (slug || name.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/(^-|-$)/g, ""))
+      .trim()
+      .toLowerCase();
+
+    let finalSlug = cleanSlug;
     try {
-      createdTheme = await prisma.theme.create({
+      const existing = await prisma.theme.findUnique({ where: { slug: cleanSlug } });
+      if (existing) {
+        finalSlug = `${cleanSlug}-${Date.now().toString().slice(-4)}`;
+      }
+    } catch (e) {
+      // Continue
+    }
+
+    try {
+      const createdTheme = await prisma.theme.create({
         data: {
           name,
-          slug,
+          slug: finalSlug,
           description: description || "Curated learning track for AI engineering and architecture.",
         },
       });
-    } catch (err) {
-      console.warn("DB theme create fallback:", err);
-      createdTheme = {
-        id: `theme-${Date.now()}`,
-        name,
-        slug,
-        description: description || "",
-        themeCompanies: [],
-      };
-    }
 
-    return NextResponse.json({
-      message: "Theme track created successfully",
-      theme: createdTheme,
-    });
+      return NextResponse.json({
+        message: "Theme track created successfully",
+        theme: createdTheme,
+      });
+    } catch (err: any) {
+      console.error("DB theme create error:", err);
+      return NextResponse.json(
+        { error: err.message || "Failed to create theme in database" },
+        { status: 500 }
+      );
+    }
   } catch (error) {
     console.error("Error in POST /api/admin/themes:", error);
     return NextResponse.json({ error: "Failed to create theme" }, { status: 500 });

@@ -85,6 +85,12 @@ export default function AdminThemesPage() {
         setOpenCreate(false);
         setForm({ name: "", slug: "", description: "" });
         loadThemes();
+        setAlertInfo({
+          open: true,
+          title: "Track Created",
+          message: "Learning track curriculum created and published successfully!",
+          variant: "success",
+        });
       } else {
         const err = await res.json();
         setAlertInfo({

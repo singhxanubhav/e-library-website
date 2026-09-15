@@ -19,8 +19,10 @@ export async function GET(request: NextRequest) {
     let progressList: any[] = [];
     let certificates: any[] = [];
 
+    let dbQuizzes: any[] = [];
+
     try {
-      [attempts, progressList, certificates] = await Promise.all([
+      [attempts, progressList, certificates, dbQuizzes] = await Promise.all([
         prisma.userQuizAttempt.findMany({
           where: { userId },
           include: { quiz: true },
@@ -31,6 +33,14 @@ export async function GET(request: NextRequest) {
         }),
         prisma.certificate.findMany({
           where: { userId },
+          orderBy: { createdAt: "desc" },
+        }),
+        prisma.quiz.findMany({
+          include: {
+            questions: true,
+            company: { select: { slug: true } },
+            theme: { select: { slug: true } },
+          },
           orderBy: { createdAt: "desc" },
         }),
       ]);
@@ -53,68 +63,50 @@ export async function GET(request: NextRequest) {
       attemptsByQuiz.set(qKey, current);
     }
 
-    // Build categorized quiz lists
-    const moduleQuizzes = SEEDED_QUIZZES.filter((q) => q.type === "module").map((q) => {
-      const att = attemptsByQuiz.get(q.id) || attemptsByQuiz.get(q.companySlug || "");
+    // Build unified quiz list from DB or fallback
+    const allQuizzes = dbQuizzes && dbQuizzes.length > 0
+      ? dbQuizzes.map((q) => ({
+          id: q.id,
+          type: q.type,
+          title: q.title,
+          description: q.description,
+          companySlug: q.company?.slug,
+          themeSlug: q.theme?.slug,
+          passingScorePercent: q.passingScorePercent,
+          questionCount: q.questions.length,
+        }))
+      : SEEDED_QUIZZES.map((q) => ({
+          id: q.id,
+          type: q.type,
+          title: q.title,
+          description: q.description,
+          companySlug: q.companySlug,
+          themeSlug: q.themeSlug,
+          passingScorePercent: q.passingScorePercent,
+          questionCount: q.questions.length,
+        }));
+
+    const mapQuizItem = (q: any) => {
+      const att = attemptsByQuiz.get(q.id) || (q.companySlug ? attemptsByQuiz.get(q.companySlug) : null) || (q.themeSlug ? attemptsByQuiz.get(q.themeSlug) : null);
       return {
         id: q.id,
         type: q.type,
         companySlug: q.companySlug,
-        title: q.title,
-        description: q.description,
-        passingScorePercent: q.passingScorePercent,
-        questionCount: q.questions.length,
-        status: att?.passed ? "passed" : att?.count ? "failed" : "unattempted",
-        bestScore: att?.bestScore ?? null,
-        attemptsCount: att?.count || 0,
-      };
-    });
-
-    const themeQuizzes = SEEDED_QUIZZES.filter((q) => q.type === "theme").map((q) => {
-      const att = attemptsByQuiz.get(q.id) || attemptsByQuiz.get(q.themeSlug || "");
-      return {
-        id: q.id,
-        type: q.type,
         themeSlug: q.themeSlug,
         title: q.title,
         description: q.description,
         passingScorePercent: q.passingScorePercent,
-        questionCount: q.questions.length,
+        questionCount: q.questionCount || 0,
         status: att?.passed ? "passed" : att?.count ? "failed" : "unattempted",
         bestScore: att?.bestScore ?? null,
         attemptsCount: att?.count || 0,
       };
-    });
+    };
 
-    const scenarioQuizzes = SEEDED_QUIZZES.filter((q) => q.type === "scenario").map((q) => {
-      const att = attemptsByQuiz.get(q.id);
-      return {
-        id: q.id,
-        type: q.type,
-        title: q.title,
-        description: q.description,
-        passingScorePercent: q.passingScorePercent,
-        questionCount: q.questions.length,
-        status: att?.passed ? "passed" : att?.count ? "failed" : "unattempted",
-        bestScore: att?.bestScore ?? null,
-        attemptsCount: att?.count || 0,
-      };
-    });
-
-    const finalQuizzes = SEEDED_QUIZZES.filter((q) => q.type === "final").map((q) => {
-      const att = attemptsByQuiz.get(q.id);
-      return {
-        id: q.id,
-        type: q.type,
-        title: q.title,
-        description: q.description,
-        passingScorePercent: q.passingScorePercent,
-        questionCount: q.questions.length,
-        status: att?.passed ? "passed" : att?.count ? "failed" : "unattempted",
-        bestScore: att?.bestScore ?? null,
-        attemptsCount: att?.count || 0,
-      };
-    });
+    const moduleQuizzes = allQuizzes.filter((q) => q.type === "module").map(mapQuizItem);
+    const themeQuizzes = allQuizzes.filter((q) => q.type === "theme").map(mapQuizItem);
+    const scenarioQuizzes = allQuizzes.filter((q) => q.type === "scenario").map(mapQuizItem);
+    const finalQuizzes = allQuizzes.filter((q) => q.type === "final").map(mapQuizItem);
 
     const completedModulesCount = Math.max(progressList.length, moduleQuizzes.filter((q) => q.status === "passed").length);
     const themeQuizzesPassedCount = themeQuizzes.filter((q) => q.status === "passed").length;
