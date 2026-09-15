@@ -17,18 +17,21 @@ export async function GET(request: NextRequest) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 403 });
     }
 
+    let dbInsights: any[] = [];
     try {
-      const dbInsights = await prisma.insight.findMany({
+      dbInsights = await prisma.insight.findMany({
         orderBy: { publishedDate: "desc" },
       });
-      if (dbInsights && dbInsights.length > 0) {
-        return NextResponse.json({ insights: dbInsights });
-      }
     } catch (err) {
       console.warn("DB insight admin fetch fallback:", err);
     }
 
-    return NextResponse.json({ insights: SEEDED_INSIGHTS });
+    const dbSlugs = new Set(dbInsights.map((i) => i.slug));
+    const missingSeeded = SEEDED_INSIGHTS.filter((s) => !dbSlugs.has(s.slug));
+
+    return NextResponse.json({
+      insights: [...dbInsights, ...missingSeeded],
+    });
   } catch (error) {
     console.error("Error in GET /api/admin/insights:", error);
     return NextResponse.json({ error: "Failed to load insights" }, { status: 500 });
@@ -45,39 +48,47 @@ export async function POST(request: NextRequest) {
     const body = await request.json();
     const { title, slug, authorName, readingTimeMin, contentMd } = body;
 
-    if (!title || !slug || !contentMd) {
-      return NextResponse.json({ error: "Title, slug, and markdown content are required" }, { status: 400 });
+    if (!title || !contentMd) {
+      return NextResponse.json({ error: "Title and markdown content are required" }, { status: 400 });
     }
 
-    let createdInsight: any = null;
+    const cleanSlug = (slug || title.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/(^-|-$)/g, ""))
+      .trim()
+      .toLowerCase();
+
+    let finalSlug = cleanSlug;
     try {
-      createdInsight = await prisma.insight.create({
+      const existing = await prisma.insight.findUnique({ where: { slug: cleanSlug } });
+      if (existing) {
+        finalSlug = `${cleanSlug}-${Date.now().toString().slice(-4)}`;
+      }
+    } catch (e) {
+      // Continue
+    }
+
+    try {
+      const createdInsight = await prisma.insight.create({
         data: {
           title,
-          slug,
+          slug: finalSlug,
           authorName: authorName || session.user.name || "Editorial Team",
           readingTimeMin: Number(readingTimeMin) || 6,
           contentMd,
           publishedDate: new Date(),
         },
       });
-    } catch (err) {
-      console.warn("DB insight create fallback:", err);
-      createdInsight = {
-        id: `ins-${Date.now()}`,
-        title,
-        slug,
-        authorName: authorName || "Editorial Team",
-        readingTimeMin: Number(readingTimeMin) || 6,
-        contentMd,
-        publishedDate: new Date().toISOString(),
-      };
-    }
 
-    return NextResponse.json({
-      message: "Insight published successfully",
-      insight: createdInsight,
-    });
+      return NextResponse.json({
+        message: "Insight published successfully",
+        insight: createdInsight,
+      });
+    } catch (err: any) {
+      console.error("DB insight create error:", err);
+      return NextResponse.json(
+        { error: err.message || "Failed to publish article to database" },
+        { status: 500 }
+      );
+    }
   } catch (error) {
     console.error("Error in POST /api/admin/insights:", error);
     return NextResponse.json({ error: "Failed to publish insight" }, { status: 500 });

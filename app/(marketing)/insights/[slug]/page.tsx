@@ -1,18 +1,46 @@
 import { notFound } from "next/navigation";
 import Link from "next/link";
 import ReactMarkdown from "react-markdown";
-import { ArrowLeft, Clock, Calendar, User, Sparkles, BookOpen } from "lucide-react";
+import { ArrowLeft, Clock, Calendar, BookOpen } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Card } from "@/components/ui/card";
 import { SEEDED_ARTICLES } from "@/lib/insights-data";
+import { prisma } from "@/lib/db";
+import { getInitials } from "@/lib/utils";
 
 interface ArticlePageProps {
   params: { slug: string };
 }
 
+async function getArticle(slug: string) {
+  try {
+    const dbInsight = await prisma.insight.findUnique({
+      where: { slug },
+    });
+
+    if (dbInsight) {
+      return {
+        slug: dbInsight.slug,
+        title: dbInsight.title,
+        authorName: dbInsight.authorName,
+        authorRole: "Case Study Contributor",
+        readingTimeMin: dbInsight.readingTimeMin,
+        publishedDate: dbInsight.publishedDate.toISOString().split("T")[0],
+        summary: dbInsight.contentMd.slice(0, 160) + "...",
+        contentMd: dbInsight.contentMd,
+        tags: (dbInsight.tagsJson as string[]) || ["Industry Analysis", "Architecture"],
+      };
+    }
+  } catch (err) {
+    console.warn("Could not query DB for article:", err);
+  }
+
+  const seeded = SEEDED_ARTICLES.find((a) => a.slug === slug);
+  return seeded || null;
+}
+
 export async function generateMetadata({ params }: ArticlePageProps) {
-  const article = SEEDED_ARTICLES.find((a) => a.slug === params.slug);
+  const article = await getArticle(params.slug);
   if (!article) return { title: "Article Not Found" };
 
   return {
@@ -21,12 +49,14 @@ export async function generateMetadata({ params }: ArticlePageProps) {
   };
 }
 
-export default function ArticleDetailPage({ params }: ArticlePageProps) {
-  const article = SEEDED_ARTICLES.find((a) => a.slug === params.slug);
+export default async function ArticleDetailPage({ params }: ArticlePageProps) {
+  const article = await getArticle(params.slug);
 
   if (!article) {
     notFound();
   }
+
+  const initials = getInitials(article.authorName || "Editorial");
 
   return (
     <div className="container mx-auto max-w-4xl px-4 py-10 sm:px-6 lg:px-8 space-y-10 pb-24">
@@ -44,7 +74,7 @@ export default function ArticleDetailPage({ params }: ArticlePageProps) {
       {/* Article Header */}
       <div className="space-y-4 border-b border-border pb-8">
         <div className="flex flex-wrap items-center gap-2">
-          {article.tags.map((t) => (
+          {article.tags.map((t: string) => (
             <Badge key={t} variant="secondary" className="text-xs">
               {t}
             </Badge>
@@ -58,7 +88,7 @@ export default function ArticleDetailPage({ params }: ArticlePageProps) {
         <div className="flex flex-wrap items-center justify-between gap-4 pt-2 text-xs sm:text-sm text-muted-foreground">
           <div className="flex items-center space-x-3">
             <div className="h-10 w-10 rounded-full bg-gradient-to-tr from-navy-800 to-electric-600 text-white flex items-center justify-center font-bold text-xs shadow-sm">
-              JS
+              {initials}
             </div>
             <div>
               <p className="font-bold text-foreground">{article.authorName}</p>
