@@ -60,9 +60,18 @@ export const authOptions: NextAuthOptions = {
         if (email === "jigyasa@aicasehub.com" && credentials.password === "Founder123!") {
           return {
             id: "usr-founder-admin-001",
-            name: "Jigyasa",
+            name: "Jigyasa (Founder)",
             email: "jigyasa@aicasehub.com",
             role: "admin",
+          };
+        }
+
+        if (email === "editor@aicasehub.com" && credentials.password === "EditorPass123!") {
+          return {
+            id: "usr-editor-001",
+            name: "Editorial Lead",
+            email: "editor@aicasehub.com",
+            role: "editor",
           };
         }
 
