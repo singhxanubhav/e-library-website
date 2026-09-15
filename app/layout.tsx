@@ -21,6 +21,14 @@ export const metadata: Metadata = {
   title: "AI Company Case Library | Learn how AI businesses create value",
   description:
     "Explore in-depth AI startup case studies, business models, unit economics, architecture workflows, and earn verified completion certificates.",
+  icons: {
+    icon: [
+      { url: "/favicon.svg", type: "image/svg+xml" },
+      { url: "/icon.svg", type: "image/svg+xml" },
+    ],
+    shortcut: "/favicon.svg",
+    apple: "/favicon.svg",
+  },
 };
 
 export const viewport = {

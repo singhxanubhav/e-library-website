@@ -1,0 +1,42 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" fill="none">
+  <defs>
+    <linearGradient id="bgGrad" x1="0" y1="0" x2="64" y2="64" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#0B0F19"/>
+      <stop offset="1" stop-color="#1E1B4B"/>
+    </linearGradient>
+    <linearGradient id="glowGrad" x1="16" y1="12" x2="48" y2="52" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#5B6CFF"/>
+      <stop offset="0.5" stop-color="#8B5CF6"/>
+      <stop offset="1" stop-color="#EC4899"/>
+    </linearGradient>
+    <filter id="glow" x="0" y="0" width="64" height="64" filterUnits="userSpaceOnUse" color-interpolation-filters="sRGB">
+      <feGaussianBlur stdDeviation="3" result="blur"/>
+      <feComposite in="SourceGraphic" in2="blur" operator="over"/>
+    </filter>
+  </defs>
+
+  <!-- Rounded App Tile -->
+  <rect width="64" height="64" rx="16" fill="url(#bgGrad)"/>
+  <rect x="1" y="1" width="62" height="62" rx="15" stroke="#5B6CFF" stroke-opacity="0.3" stroke-width="2"/>
+
+  <!-- Neural Core / Shield / Book Mark -->
+  <g filter="url(#glow)">
+    <!-- Architectural Book / Chip Silhouette -->
+    <path d="M32 14L48 22V36C48 44.5 41.2 50.8 32 53C22.8 50.8 16 44.5 16 36V22L32 14Z" 
+          stroke="url(#glowGrad)" 
+          stroke-width="3" 
+          stroke-linejoin="round"
+          fill="#5B6CFF" 
+          fill-opacity="0.12"/>
+    
+    <!-- Central AI Node Pulse -->
+    <circle cx="32" cy="32" r="5" fill="#5B6CFF"/>
+    <circle cx="32" cy="32" r="2.5" fill="#FFFFFF"/>
+    
+    <!-- Circuit Synapses -->
+    <line x1="32" y1="20" x2="32" y2="27" stroke="#8B5CF6" stroke-width="2" stroke-linecap="round"/>
+    <line x1="32" y1="37" x2="32" y2="44" stroke="#8B5CF6" stroke-width="2" stroke-linecap="round"/>
+    <line x1="22" y1="32" x2="27" y2="32" stroke="#8B5CF6" stroke-width="2" stroke-linecap="round"/>
+    <line x1="37" y1="32" x2="42" y2="32" stroke="#8B5CF6" stroke-width="2" stroke-linecap="round"/>
+  </g>
+</svg>
