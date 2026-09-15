@@ -23,6 +23,12 @@ export const metadata: Metadata = {
     "Explore in-depth AI startup case studies, business models, unit economics, architecture workflows, and earn verified completion certificates.",
 };
 
+export const viewport = {
+  width: "device-width",
+  initialScale: 1,
+  maximumScale: 5,
+};
+
 export default function RootLayout({
   children,
 }: Readonly<{

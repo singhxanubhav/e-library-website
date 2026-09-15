@@ -62,7 +62,7 @@ export default function InsightsPage() {
                   </p>
                 </CardHeader>
 
-                <CardFooter className="p-6 pt-3 border-t border-border/60 bg-muted/20 flex items-center justify-between text-xs text-muted-foreground">
+                <CardFooter className="p-5 sm:p-6 pt-3 border-t border-border/60 bg-muted/20 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2 text-xs text-muted-foreground">
                   <div className="flex items-center space-x-2">
                     <div className="h-6 w-6 rounded-full bg-navy-800 text-white flex items-center justify-center text-[10px] font-bold">
                       JS

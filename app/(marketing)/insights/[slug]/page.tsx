@@ -80,7 +80,7 @@ export default function ArticleDetailPage({ params }: ArticlePageProps) {
       </div>
 
       {/* Markdown Content with Tailwind Typography */}
-      <article className="prose prose-slate lg:prose-lg dark:prose-invert max-w-none prose-headings:font-heading prose-headings:font-bold prose-headings:tracking-tight prose-a:text-electric-500 hover:prose-a:underline prose-pre:bg-navy-950 prose-pre:text-slate-100 prose-pre:rounded-2xl prose-pre:border prose-pre:border-border prose-blockquote:border-l-electric-500 prose-blockquote:bg-navy-50/50 dark:prose-blockquote:bg-navy-900/40 prose-blockquote:p-4 prose-blockquote:rounded-r-xl">
+      <article className="prose prose-slate lg:prose-lg dark:prose-invert max-w-none overflow-x-hidden break-words prose-headings:font-heading prose-headings:font-bold prose-headings:tracking-tight prose-a:text-electric-500 hover:prose-a:underline prose-pre:bg-navy-950 prose-pre:text-slate-100 prose-pre:rounded-2xl prose-pre:border prose-pre:border-border prose-pre:overflow-x-auto prose-blockquote:border-l-electric-500 prose-blockquote:bg-navy-50/50 dark:prose-blockquote:bg-navy-900/40 prose-blockquote:p-4 prose-blockquote:rounded-r-xl">
         <ReactMarkdown>{article.contentMd}</ReactMarkdown>
       </article>
 

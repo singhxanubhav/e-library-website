@@ -109,7 +109,7 @@ export function ConceptDialogCards() {
         </div>
       </div>
 
-      <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
         {CONCEPT_TERMS.map((term) => (
           <button
             key={term.slug}
@@ -139,7 +139,7 @@ export function ConceptDialogCards() {
       {/* Modal Dialog */}
       <Dialog open={!!selectedTerm} onOpenChange={(open) => !open && setSelectedTerm(null)}>
         {selectedTerm && (
-          <DialogContent className="sm:max-w-lg">
+          <DialogContent className="w-[95vw] sm:max-w-lg p-4 sm:p-6 rounded-2xl sm:rounded-3xl">
             <DialogHeader>
               <div className="flex items-center space-x-2 mb-1">
                 <Badge variant="electric" className="text-[10px] font-bold uppercase">

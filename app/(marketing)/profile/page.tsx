@@ -271,7 +271,7 @@ export default function ProfilePage() {
         <h2 className="font-heading text-lg font-bold text-foreground">
           Learning Statistics
         </h2>
-        <div className="grid grid-cols-2 sm:grid-cols-5 gap-4">
+        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3 sm:gap-4">
           <Card className="rounded-2xl border border-border bg-card p-4 shadow-soft">
             <div className="flex items-center justify-between text-muted-foreground mb-1">
               <span className="text-[11px] font-bold uppercase">Completed</span>
@@ -316,7 +316,7 @@ export default function ProfilePage() {
             <p className="text-[10px] text-muted-foreground mt-0.5">Active Days</p>
           </Card>
 
-          <Card className="rounded-2xl border border-border bg-card p-4 shadow-soft">
+          <Card className="col-span-2 sm:col-span-1 rounded-2xl border border-border bg-card p-4 shadow-soft">
             <div className="flex items-center justify-between text-muted-foreground mb-1">
               <span className="text-[11px] font-bold uppercase">Longest</span>
               <Award className="h-4 w-4 text-blue-500" />
@@ -396,7 +396,7 @@ export default function ProfilePage() {
 
       {/* Password Change Dialog */}
       <Dialog open={isPasswordModalOpen} onOpenChange={setIsPasswordModalOpen}>
-        <DialogContent className="sm:max-w-md">
+        <DialogContent className="w-[95vw] sm:max-w-md rounded-2xl sm:rounded-3xl p-4 sm:p-6">
           <DialogHeader>
             <DialogTitle>Change Password</DialogTitle>
             <DialogDescription>
@@ -456,7 +456,7 @@ export default function ProfilePage() {
 
       {/* Delete Account Dialog */}
       <Dialog open={isDeleteModalOpen} onOpenChange={setIsDeleteModalOpen}>
-        <DialogContent className="sm:max-w-md">
+        <DialogContent className="w-[95vw] sm:max-w-md rounded-2xl sm:rounded-3xl p-4 sm:p-6">
           <DialogHeader>
             <DialogTitle className="text-destructive flex items-center space-x-2">
               <AlertTriangle className="h-5 w-5" />

@@ -28,7 +28,7 @@ export function TractionMetricsSection({ metrics }: { metrics: TractionMetrics }
         </h2>
 
         {/* Primary 4-Metric Grid */}
-        <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4 mb-6 sm:mb-8">
           <div className="rounded-2xl border border-border bg-navy-50/50 dark:bg-navy-900/40 p-4">
             <div className="flex items-center justify-between text-muted-foreground mb-1">
               <span className="text-xs font-semibold uppercase">Revenue Run-Rate</span>

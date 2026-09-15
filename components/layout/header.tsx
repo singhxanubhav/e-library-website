@@ -12,6 +12,7 @@ import {
   Award,
   ChevronRight,
   BookOpen,
+  ShieldCheck,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { ThemeToggle } from "./theme-toggle";
@@ -158,6 +159,14 @@ export function Header() {
                     <span>My Certificates</span>
                   </Link>
                 </DropdownMenuItem>
+                {(session.user.role === "admin" || session.user.role === "editor") && (
+                  <DropdownMenuItem asChild>
+                    <Link href="/admin" className="flex items-center cursor-pointer text-electric-600 dark:text-electric-400 font-semibold">
+                      <ShieldCheck className="mr-2 h-4 w-4" />
+                      <span>Admin Suite</span>
+                    </Link>
+                  </DropdownMenuItem>
+                )}
                 <DropdownMenuSeparator />
                 <DropdownMenuItem
                   onClick={() => signOut({ callbackUrl: "/" })}
@@ -231,6 +240,20 @@ export function Header() {
                     </Link>
                   );
                 })}
+
+                {(session?.user?.role === "admin" || session?.user?.role === "editor") && (
+                  <Link
+                    href="/admin"
+                    onClick={() => setMobileOpen(false)}
+                    className="flex items-center justify-between rounded-xl px-3.5 py-2.5 text-sm font-bold bg-electric-500/10 text-electric-600 dark:text-electric-400 border border-electric-500/20"
+                  >
+                    <div className="flex items-center space-x-2">
+                      <ShieldCheck className="h-4 w-4" />
+                      <span>Admin Control Panel</span>
+                    </div>
+                    <ChevronRight className="h-4 w-4 opacity-70" />
+                  </Link>
+                )}
               </div>
 
               <div className="pt-4 border-t border-border flex flex-col space-y-3">
