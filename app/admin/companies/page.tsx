@@ -25,13 +25,20 @@ import {
   DialogFooter,
 } from "@/components/ui/dialog";
 import Link from "next/link";
+import { ConfirmDialog } from "@/components/ui/confirm-dialog";
+import { AlertModal } from "@/components/ui/alert-modal";
 
 export default function AdminCompaniesPage() {
   const [companies, setCompanies] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState("");
   const [openCreate, setOpenCreate] = useState(false);
-  const [deletingId, setDeletingId] = useState<string | null>(null);
+  const [deleteTargetId, setDeleteTargetId] = useState<string | null>(null);
+  const [deleteLoading, setDeleteLoading] = useState(false);
+  const [alertInfo, setAlertInfo] = useState<{ open: boolean; message: string; title?: string; variant?: "error" | "success" }>({
+    open: false,
+    message: "",
+  });
 
   // Form State
   const [form, setForm] = useState({
@@ -69,7 +76,7 @@ export default function AdminCompaniesPage() {
   const handleCreate = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!form.name || !form.slug) {
-      alert("Name and slug are required.");
+      setAlertInfo({ open: true, message: "Name and slug are required fields.", title: "Missing Information", variant: "error" });
       return;
     }
 
@@ -95,27 +102,35 @@ export default function AdminCompaniesPage() {
           isFeatured: false,
         });
         loadCompanies();
+        setAlertInfo({ open: true, message: "Company module created successfully!", title: "Success", variant: "success" });
       } else {
         const err = await res.json();
-        alert(err.error || "Failed to create company");
+        setAlertInfo({ open: true, message: err.error || "Failed to create company module.", variant: "error" });
       }
     } catch (err) {
       console.error(err);
-      alert("Failed to create company");
+      setAlertInfo({ open: true, message: "Network error occurred while creating company.", variant: "error" });
     }
   };
 
-  const handleDelete = async (id: string) => {
-    if (!confirm("Are you sure you want to delete this company module?")) return;
+  const confirmDelete = async () => {
+    if (!deleteTargetId) return;
+    setDeleteLoading(true);
     try {
-      const res = await fetch(`/api/admin/companies?id=${id}`, {
+      const res = await fetch(`/api/admin/companies?id=${deleteTargetId}`, {
         method: "DELETE",
       });
       if (res.ok) {
-        setCompanies((prev) => prev.filter((c) => c.id !== id && c.slug !== id));
+        setCompanies((prev) => prev.filter((c) => c.id !== deleteTargetId && c.slug !== deleteTargetId));
+        setDeleteTargetId(null);
+      } else {
+        setAlertInfo({ open: true, message: "Failed to delete company module from database.", variant: "error" });
       }
-    } catch (e) {
-      console.error(e);
+    } catch (err) {
+      console.error(err);
+      setAlertInfo({ open: true, message: "Network error occurred while deleting.", variant: "error" });
+    } finally {
+      setDeleteLoading(false);
     }
   };
 
@@ -226,7 +241,7 @@ export default function AdminCompaniesPage() {
                     <Button
                       variant="ghost"
                       size="sm"
-                      onClick={() => handleDelete(company.id || company.slug)}
+                      onClick={() => setDeleteTargetId(company.id || company.slug)}
                       className="rounded-lg h-8 px-2 text-xs text-rose-500 hover:text-rose-600 hover:bg-rose-500/10"
                     >
                       <Trash2 className="w-3.5 h-3.5" />
@@ -399,6 +414,25 @@ export default function AdminCompaniesPage() {
           </form>
         </DialogContent>
       </Dialog>
+
+      {/* Confirmation & Alert Modals */}
+      <ConfirmDialog
+        open={!!deleteTargetId}
+        onOpenChange={(open) => !open && setDeleteTargetId(null)}
+        title="Delete Company Module"
+        description="Are you sure you want to permanently delete this company teardown module? This action cannot be undone."
+        confirmText="Delete Module"
+        isLoading={deleteLoading}
+        onConfirm={confirmDelete}
+      />
+
+      <AlertModal
+        open={alertInfo.open}
+        onOpenChange={(open) => setAlertInfo((prev) => ({ ...prev, open }))}
+        title={alertInfo.title}
+        message={alertInfo.message}
+        variant={alertInfo.variant}
+      />
     </div>
   );
 }

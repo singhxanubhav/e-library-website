@@ -22,12 +22,20 @@ import {
   DialogFooter,
 } from "@/components/ui/dialog";
 import Link from "next/link";
+import { ConfirmDialog } from "@/components/ui/confirm-dialog";
+import { AlertModal } from "@/components/ui/alert-modal";
 
 export default function AdminQuizzesPage() {
   const [quizzes, setQuizzes] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState("");
   const [openCreate, setOpenCreate] = useState(false);
+  const [deleteTargetId, setDeleteTargetId] = useState<string | null>(null);
+  const [deleteLoading, setDeleteLoading] = useState(false);
+  const [alertInfo, setAlertInfo] = useState<{ open: boolean; message: string; title?: string; variant?: "error" | "success" }>({
+    open: false,
+    message: "",
+  });
 
   const [form, setForm] = useState({
     title: "",
@@ -58,7 +66,12 @@ export default function AdminQuizzesPage() {
   const handleCreate = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!form.title) {
-      alert("Title is required.");
+      setAlertInfo({
+        open: true,
+        title: "Missing Field",
+        message: "Assessment Title is required.",
+        variant: "error",
+      });
       return;
     }
 
@@ -75,25 +88,53 @@ export default function AdminQuizzesPage() {
         loadQuizzes();
       } else {
         const err = await res.json();
-        alert(err.error || "Failed to create quiz");
+        setAlertInfo({
+          open: true,
+          title: "Error Creating Assessment",
+          message: err.error || "Failed to create assessment",
+          variant: "error",
+        });
       }
     } catch (err) {
       console.error(err);
-      alert("Failed to create quiz");
+      setAlertInfo({
+        open: true,
+        title: "Network Error",
+        message: "Failed to create assessment due to a network error.",
+        variant: "error",
+      });
     }
   };
 
-  const handleDelete = async (id: string) => {
-    if (!confirm("Are you sure you want to delete this quiz?")) return;
+  const confirmDelete = async () => {
+    if (!deleteTargetId) return;
     try {
-      const res = await fetch(`/api/admin/quizzes?id=${id}`, {
+      setDeleteLoading(true);
+      const res = await fetch(`/api/admin/quizzes?id=${deleteTargetId}`, {
         method: "DELETE",
       });
       if (res.ok) {
-        setQuizzes((prev) => prev.filter((q) => q.id !== id));
+        setQuizzes((prev) => prev.filter((q) => q.id !== deleteTargetId));
+        setDeleteTargetId(null);
+      } else {
+        const err = await res.json();
+        setAlertInfo({
+          open: true,
+          title: "Delete Failed",
+          message: err.error || "Failed to delete assessment",
+          variant: "error",
+        });
       }
     } catch (e) {
       console.error(e);
+      setAlertInfo({
+        open: true,
+        title: "Delete Failed",
+        message: "An error occurred while deleting the assessment.",
+        variant: "error",
+      });
+    } finally {
+      setDeleteLoading(false);
     }
   };
 
@@ -196,7 +237,7 @@ export default function AdminQuizzesPage() {
                   <Button
                     variant="ghost"
                     size="sm"
-                    onClick={() => handleDelete(quiz.id)}
+                    onClick={() => setDeleteTargetId(quiz.id)}
                     className="rounded-lg h-8 px-2 text-xs text-rose-500 hover:text-rose-600 hover:bg-rose-500/10"
                   >
                     <Trash2 className="w-3.5 h-3.5" />
@@ -280,6 +321,25 @@ export default function AdminQuizzesPage() {
           </form>
         </DialogContent>
       </Dialog>
+
+      {/* Confirmation & Alert Modals */}
+      <ConfirmDialog
+        open={!!deleteTargetId}
+        onOpenChange={(open) => !open && setDeleteTargetId(null)}
+        title="Delete Assessment"
+        description="Are you sure you want to permanently delete this assessment? All associated questions and learner attempts will be affected."
+        confirmText="Delete Assessment"
+        isLoading={deleteLoading}
+        onConfirm={confirmDelete}
+      />
+
+      <AlertModal
+        open={alertInfo.open}
+        onOpenChange={(open) => setAlertInfo((prev) => ({ ...prev, open }))}
+        title={alertInfo.title}
+        message={alertInfo.message}
+        variant={alertInfo.variant}
+      />
     </div>
   );
 }

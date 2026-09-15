@@ -22,12 +22,20 @@ import {
   DialogFooter,
 } from "@/components/ui/dialog";
 import Link from "next/link";
+import { ConfirmDialog } from "@/components/ui/confirm-dialog";
+import { AlertModal } from "@/components/ui/alert-modal";
 
 export default function AdminThemesPage() {
   const [themes, setThemes] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState("");
   const [openCreate, setOpenCreate] = useState(false);
+  const [deleteTargetId, setDeleteTargetId] = useState<string | null>(null);
+  const [deleteLoading, setDeleteLoading] = useState(false);
+  const [alertInfo, setAlertInfo] = useState<{ open: boolean; message: string; title?: string; variant?: "error" | "success" }>({
+    open: false,
+    message: "",
+  });
 
   const [form, setForm] = useState({
     name: "",
@@ -57,7 +65,12 @@ export default function AdminThemesPage() {
   const handleCreate = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!form.name || !form.slug) {
-      alert("Name and slug are required.");
+      setAlertInfo({
+        open: true,
+        title: "Missing Fields",
+        message: "Track name and slug are required fields.",
+        variant: "error",
+      });
       return;
     }
 
@@ -74,25 +87,53 @@ export default function AdminThemesPage() {
         loadThemes();
       } else {
         const err = await res.json();
-        alert(err.error || "Failed to create track");
+        setAlertInfo({
+          open: true,
+          title: "Error Creating Track",
+          message: err.error || "Failed to create learning track",
+          variant: "error",
+        });
       }
     } catch (err) {
       console.error(err);
-      alert("Failed to create track");
+      setAlertInfo({
+        open: true,
+        title: "Network Error",
+        message: "Failed to create track due to a network error.",
+        variant: "error",
+      });
     }
   };
 
-  const handleDelete = async (id: string) => {
-    if (!confirm("Are you sure you want to delete this track?")) return;
+  const confirmDelete = async () => {
+    if (!deleteTargetId) return;
     try {
-      const res = await fetch(`/api/admin/themes?id=${id}`, {
+      setDeleteLoading(true);
+      const res = await fetch(`/api/admin/themes?id=${deleteTargetId}`, {
         method: "DELETE",
       });
       if (res.ok) {
-        setThemes((prev) => prev.filter((t) => t.id !== id && t.slug !== id));
+        setThemes((prev) => prev.filter((t) => t.id !== deleteTargetId && t.slug !== deleteTargetId));
+        setDeleteTargetId(null);
+      } else {
+        const err = await res.json();
+        setAlertInfo({
+          open: true,
+          title: "Delete Failed",
+          message: err.error || "Failed to delete track",
+          variant: "error",
+        });
       }
     } catch (e) {
       console.error(e);
+      setAlertInfo({
+        open: true,
+        title: "Delete Failed",
+        message: "An error occurred while deleting track.",
+        variant: "error",
+      });
+    } finally {
+      setDeleteLoading(false);
     }
   };
 
@@ -180,7 +221,7 @@ export default function AdminThemesPage() {
                 <Button
                   variant="ghost"
                   size="sm"
-                  onClick={() => handleDelete(theme.id || theme.slug)}
+                  onClick={() => setDeleteTargetId(theme.id || theme.slug)}
                   className="rounded-xl text-xs text-rose-500 hover:text-rose-600 hover:bg-rose-500/10"
                 >
                   <Trash2 className="w-3.5 h-3.5" />
@@ -250,6 +291,25 @@ export default function AdminThemesPage() {
           </form>
         </DialogContent>
       </Dialog>
+
+      {/* Confirmation & Alert Modals */}
+      <ConfirmDialog
+        open={!!deleteTargetId}
+        onOpenChange={(open) => !open && setDeleteTargetId(null)}
+        title="Delete Learning Track"
+        description="Are you sure you want to permanently delete this learning track? Case modules will remain available individually."
+        confirmText="Delete Track"
+        isLoading={deleteLoading}
+        onConfirm={confirmDelete}
+      />
+
+      <AlertModal
+        open={alertInfo.open}
+        onOpenChange={(open) => setAlertInfo((prev) => ({ ...prev, open }))}
+        title={alertInfo.title}
+        message={alertInfo.message}
+        variant={alertInfo.variant}
+      />
     </div>
   );
 }

@@ -24,6 +24,8 @@ import {
 } from "@/components/ui/dialog";
 import ReactMarkdown from "react-markdown";
 import Link from "next/link";
+import { ConfirmDialog } from "@/components/ui/confirm-dialog";
+import { AlertModal } from "@/components/ui/alert-modal";
 
 export default function AdminInsightsPage() {
   const [insights, setInsights] = useState<any[]>([]);
@@ -31,11 +33,17 @@ export default function AdminInsightsPage() {
   const [search, setSearch] = useState("");
   const [openCreate, setOpenCreate] = useState(false);
   const [previewMode, setPreviewMode] = useState(false);
+  const [deleteTargetId, setDeleteTargetId] = useState<string | null>(null);
+  const [deleteLoading, setDeleteLoading] = useState(false);
+  const [alertInfo, setAlertInfo] = useState<{ open: boolean; message: string; title?: string; variant?: "error" | "success" }>({
+    open: false,
+    message: "",
+  });
 
   const [form, setForm] = useState({
     title: "",
     slug: "",
-    authorName: "",
+    authorName: "Jigyasa Sharma",
     readingTimeMin: "6",
     contentMd: "",
   });
@@ -62,7 +70,7 @@ export default function AdminInsightsPage() {
   const handleCreate = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!form.title || !form.slug || !form.contentMd) {
-      alert("Title, slug, and markdown content are required.");
+      setAlertInfo({ open: true, message: "Title, slug, and markdown content are required fields.", title: "Missing Information", variant: "error" });
       return;
     }
 
@@ -78,33 +86,41 @@ export default function AdminInsightsPage() {
         setForm({
           title: "",
           slug: "",
-          authorName: "",
+          authorName: "Jigyasa Sharma",
           readingTimeMin: "6",
           contentMd: "",
         });
         setPreviewMode(false);
         loadInsights();
+        setAlertInfo({ open: true, message: "Insight article published successfully!", title: "Published", variant: "success" });
       } else {
         const err = await res.json();
-        alert(err.error || "Failed to publish article");
+        setAlertInfo({ open: true, message: err.error || "Failed to publish article.", variant: "error" });
       }
     } catch (err) {
       console.error(err);
-      alert("Failed to publish article");
+      setAlertInfo({ open: true, message: "Network error occurred while publishing.", variant: "error" });
     }
   };
 
-  const handleDelete = async (id: string) => {
-    if (!confirm("Are you sure you want to delete this insight article?")) return;
+  const confirmDelete = async () => {
+    if (!deleteTargetId) return;
+    setDeleteLoading(true);
     try {
-      const res = await fetch(`/api/admin/insights?id=${id}`, {
+      const res = await fetch(`/api/admin/insights?id=${deleteTargetId}`, {
         method: "DELETE",
       });
       if (res.ok) {
-        setInsights((prev) => prev.filter((i) => i.id !== id && i.slug !== id));
+        setInsights((prev) => prev.filter((i) => i.id !== deleteTargetId && i.slug !== deleteTargetId));
+        setDeleteTargetId(null);
+      } else {
+        setAlertInfo({ open: true, message: "Failed to delete insight article.", variant: "error" });
       }
     } catch (e) {
       console.error(e);
+      setAlertInfo({ open: true, message: "Network error occurred while deleting.", variant: "error" });
+    } finally {
+      setDeleteLoading(false);
     }
   };
 
@@ -182,7 +198,7 @@ export default function AdminInsightsPage() {
                     <Button
                       variant="ghost"
                       size="sm"
-                      onClick={() => handleDelete(item.id || item.slug)}
+                      onClick={() => setDeleteTargetId(item.id || item.slug)}
                       className="rounded-lg h-8 px-2 text-xs text-rose-500 hover:text-rose-600 hover:bg-rose-500/10"
                     >
                       <Trash2 className="w-3.5 h-3.5" />
@@ -312,6 +328,25 @@ export default function AdminInsightsPage() {
           </form>
         </DialogContent>
       </Dialog>
+
+      {/* Confirmation & Alert Modals */}
+      <ConfirmDialog
+        open={!!deleteTargetId}
+        onOpenChange={(open) => !open && setDeleteTargetId(null)}
+        title="Delete Insight Article"
+        description="Are you sure you want to permanently delete this research article? This will remove it from the public Insights directory."
+        confirmText="Delete Article"
+        isLoading={deleteLoading}
+        onConfirm={confirmDelete}
+      />
+
+      <AlertModal
+        open={alertInfo.open}
+        onOpenChange={(open) => setAlertInfo((prev) => ({ ...prev, open }))}
+        title={alertInfo.title}
+        message={alertInfo.message}
+        variant={alertInfo.variant}
+      />
     </div>
   );
 }
